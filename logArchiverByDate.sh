@@ -5,6 +5,7 @@ ERR="1"
 SAMPLE_CMD="bash ${SHELL_NAME} LOG_DIR"
 filename=""
 declare -A log_files_map
+currentTimestamp=$(date +"%Y-%m-%d %H:%M:%S")
 
 # Check Arg Count
 if [ $# -eq 0 ]; then
@@ -17,7 +18,6 @@ elif [ $# -ge 2 ]; then
     exit ${ERR}
 fi
 LOG_DIR="$1"
-TARGET_DIR=${LOG_DIR}/../LOGS
 
 # Check if LOG_DIR exists
 if [ ! -d  "${LOG_DIR}" ]; then
@@ -46,16 +46,15 @@ for log_file in "$LOG_DIR"/*.log; do
 done
 
 # Create Root Archives Directory if not exist
-mkdir -p $TARGET_DIR
+#mkdir -p $TARGET_DIR
 
 for ymd in "${!log_files_map[@]}"; do
-    if [ -f ${TARGET_DIR}/${ymd}.tar.gz ]; then
-        currentTimestamp=$(date +"%Y-%m-%d %H:%M:%S")
-        tar -cvf "${TARGET_DIR}/${ymd}_${currentTimestamp}.tar.gz" ${log_files_map[$ymd]} > /dev/null 2>&1
-        echo "Successfully Archived to ${TARGET_DIR}/${ymd}_${currentTimestamp}"
+    if [ -f ${LOG_DIR}/${ymd}.tar.gz ]; then
+        tar -cvf "${LOG_DIR}/${ymd}_${currentTimestamp}.tar.gz" ${log_files_map[$ymd]} > /dev/null 2>&1
+        echo "Successfully Archived to ${LOG_DIR}/${ymd}_${currentTimestamp}"
         rm ${log_files_map[$ymd]}
     else
-        tar -cvf ${TARGET_DIR}/${ymd}.tar.gz ${log_files_map[$ymd]} > /dev/null 2>&1
+        tar -cvf ${LOG_DIR}/${ymd}.tar.gz ${log_files_map[$ymd]} > /dev/null 2>&1
         echo "Successfully Archived to $LOG_DIR/$ymd"
         rm ${log_files_map[$ymd]}
     fi
